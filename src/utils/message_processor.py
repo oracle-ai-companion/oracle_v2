@@ -15,19 +15,20 @@ class MessageProcessor:
         content = self.parse_mentions(message.content)
         attachments = message.attachments
 
-        # Process text content
-        human_message = HumanMessage(content=content)
-        response = await self.langchain_wrapper.process_message(human_message)
+        async with message.channel.typing():
+            # Process text content
+            human_message = HumanMessage(content=content)
+            response = await self.langchain_wrapper.process_message(human_message)
 
-        # Process attachments (images, videos)
-        if attachments:
-            for attachment in attachments:
-                if attachment.content_type.startswith('image'):
-                    image_analysis = await self.langchain_wrapper.analyze_image(attachment.url)
-                    response += f"\n\nImage analysis: {image_analysis}"
-                elif attachment.content_type.startswith('video'):
-                    video_analysis = await self.langchain_wrapper.analyze_video(attachment.url)
-                    response += f"\n\nVideo analysis: {video_analysis}"
+            # Process attachments (images, videos)
+            if attachments:
+                for attachment in attachments:
+                    if attachment.content_type.startswith('image'):
+                        image_analysis = await self.langchain_wrapper.analyze_image(attachment.url)
+                        response += f"\n\nImage analysis: {image_analysis}"
+                    elif attachment.content_type.startswith('video'):
+                        video_analysis = await self.langchain_wrapper.analyze_video(attachment.url)
+                        response += f"\n\nVideo analysis: {video_analysis}"
 
         await message.channel.send(response)
 

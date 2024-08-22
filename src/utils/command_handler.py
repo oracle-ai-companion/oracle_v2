@@ -15,7 +15,8 @@ class CommandHandler:
         @self.bot.command(name="search")
         async def search_command(ctx, *, query):
             try:
-                response = await self.langchain_wrapper.process_command("search", query, self.tools)
+                async with ctx.typing():
+                    response = await self.langchain_wrapper.process_command("search", query, self.tools)
                 await ctx.send(response)
             except Exception as e:
                 logger.error(f"Error processing search command: {str(e)}")
@@ -39,7 +40,8 @@ class CommandHandler:
             await command(ctx, *args)
         else:
             try:
-                response = await self.langchain_wrapper.process_command(command_name, *args, self.tools)
+                async with ctx.typing():
+                    response = await self.langchain_wrapper.process_command(command_name, *args, self.tools)
                 await ctx.send(response)
             except Exception as e:
                 logger.error(f"Error processing command {command_name}: {str(e)}")
